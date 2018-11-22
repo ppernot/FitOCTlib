@@ -1,30 +1,48 @@
 #  estimateExpPrior.R
 #' Define/estimate normal multivariate prior pdf for exponential decay parameters.
-#' @param x a numeric vector of depths
-#' @param uy a numeric vector of uncertainties
-#' @param dataType an numeric (1 or 2) defining the type of data 
-#' @param priorType a string defining the type of prior
-#' @param out ourput from \code{fitMonoExp}
-#' @param ru_theta optional real defining the relative uncertainty on parameters
-#' @param eps tolerance parameter for moments matching method
-#' @param nb_chains  number of MCMC chains
-#' @param nb_warmup number of warmup steps
-#' @param nb_iter   number of steps
+#' @param x         numeric vector of depths
+#' @param uy        numeric vector of uncertainties
+#' @param dataType  integer defining the type of data (1:intensity or 
+#'                  2:amplitude) )
+#' @param priorType string defining the type of prior ('mono' or 'abc')
+#' @param out       output list from \code{fitMonoExp}
+#' @param ru_theta  optional positive real defining the relative uncertainty 
+#'                  on parameters (priorType='mono')
+#' @param eps       tolerance parameter for the moments matching method 
+#'                  (priorType='abc')
+#' @param nb_chains number of MCMC chains (priorType='abc')
+#' @param nb_warmup number of warmup steps (priorType='abc')
+#' @param nb_iter   number of steps (priorType='abc')
 #'  
-#' @return A list containing the center, covariance matrix 
-#' of the prior pdf and the constraint and realized statistics.  
+#' @return A list containing: the center, covariance matrix 
+#'         of the prior pdf and a list with the constraint 
+#'         and realized statistics.  
+#' 
+#' @details Provides two ways to buil a normal multivariate prior for 
+#'          the exponential decay parameters of the \code{ExpGP} model.
+#'          The mean value is in both cases the MAP issued by fitMonoExp.
+#'          For the covariance matrix one has two options: 
+#'          \describe{
+#'             \item{priorType='mono'}{
+#'             a covariance matrix is built from the correlation matrix 
+#'             estimated by the \code{fitMonoExp} model and a relative 
+#'             uncertainty on the parameters (\code{ru_theta}). 
+#'             This accounts for the fact that the parameters 
+#'             uncertainties provided by fitMonoExp are not reliable,
+#'             as they are issued from an invalid model.
+#'             }
+#'             \item{priorType='abc'}{
+#'             the parameters uncertainties/variances are optimized
+#'             by a moments matching strategy: (1) the 2-sigma prediction 
+#'             uncertainty has to match the 95-th quantile of the absolute
+#'             errors of the fitMonoExp model (this statistics is weighted 
+#'             by \code{uy}); and (2) the standard deviation of the prediction 
+#'             uncertainty has to be as small as possible.
+#'             This prior assumes a diagonal covariance matrix.
+#'             }
+#' } 
 #' 
 #' @author Pascal PERNOT
-#' 
-#' @details Provides two ways to buil a prior for the exponential decay 
-#' parameters of the \code{ExpGP} model:
-#' \describe{
-#'   \item{priorType='mono'}{builds a covariance matrix from the correlation 
-#'     matrix of the \code{fitMonoExp} model and a relative uncertainty 
-#'     parameter \code{ru_theta}}
-#'   \item{priorType='abc'}{estimates the parameters uncertainties by 
-#'     a moments matching strategy, and assume no correlation}
-#' } 
 #' 
 #' @export
 
