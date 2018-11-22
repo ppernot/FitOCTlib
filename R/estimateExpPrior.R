@@ -2,8 +2,8 @@
 #' Define/estimate normal multivariate prior pdf for exponential decay parameters.
 #' @param x         numeric vector of depths
 #' @param uy        numeric vector of uncertainties
-#' @param dataType  integer defining the type of data (1:intensity or 
-#'                  2:amplitude) )
+#' @param dataType  integer defining the type of data (1:amplitude or 
+#'                  2:intensity) )
 #' @param priorType string defining the type of prior ('mono' or 'abc')
 #' @param out       output list from \code{fitMonoExp}
 #' @param ru_theta  optional positive real defining the relative uncertainty 
@@ -15,8 +15,9 @@
 #' @param nb_iter   number of steps (priorType='abc')
 #'  
 #' @return A list containing: the center, covariance matrix 
-#'         of the prior pdf and a list with the constraint 
-#'         and realized statistics.  
+#'         of the prior pdf and, for \code{priorType = 'abc'}, 
+#'         a \code{stats} list containing the constraint \code{Sobs} 
+#'         and realized \code{Ssim} statistics.  
 #' 
 #' @details Provides two ways to buil a normal multivariate prior for 
 #'          the exponential decay parameters of the \code{ExpGP} model.
@@ -40,13 +41,13 @@
 #'             uncertainty has to be as small as possible.
 #'             This prior assumes a diagonal covariance matrix.
 #'             }
-#' } 
+#'          } 
 #' 
 #' @author Pascal PERNOT
 #' 
 #' @export
 
-estimateExpPrior <- function(x, uy, dataType, priorType = 'mono',
+estimateExpPrior <- function(x, uy, dataType = 2, priorType = 'mono',
                              out, ru_theta = 0.05, eps = 1e-3,    
                              nb_chains = 4, nb_warmup = 800,
                              nb_iter = nb_warmup + 200) {
@@ -95,6 +96,7 @@ estimateExpPrior <- function(x, uy, dataType, priorType = 'mono',
       verbose   = FALSE
     )
     
+    # Get MAP
     lp   = rstan::extract(fit,'lp__')[[1]]
     map  = which.max(lp)
     u_theta   = rstan::extract(fit,'u_theta')[[1]][map,]
@@ -113,7 +115,7 @@ estimateExpPrior <- function(x, uy, dataType, priorType = 'mono',
     list(
       theta0 = theta0,
       Sigma0 = Sigma0,
-      rList  = rList
+      stats  = rList
     )
   )
 }

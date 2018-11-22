@@ -4,7 +4,7 @@
 \alias{estimateExpPrior}
 \title{Define/estimate normal multivariate prior pdf for exponential decay parameters.}
 \usage{
-estimateExpPrior(x, uy, dataType, priorType = "mono", out,
+estimateExpPrior(x, uy, dataType = 2, priorType = "mono", out,
   ru_theta = 0.05, eps = 0.001, nb_chains = 4, nb_warmup = 800,
   nb_iter = nb_warmup + 200)
 }
@@ -13,8 +13,8 @@ estimateExpPrior(x, uy, dataType, priorType = "mono", out,
 
 \item{uy}{numeric vector of uncertainties}
 
-\item{dataType}{integer defining the type of data (1:intensity or 
-2:amplitude) )}
+\item{dataType}{integer defining the type of data (1:amplitude or 
+2:intensity) )}
 
 \item{priorType}{string defining the type of prior ('mono' or 'abc')}
 
@@ -33,9 +33,10 @@ on parameters (priorType='mono')}
 \item{nb_iter}{number of steps (priorType='abc')}
 }
 \value{
-A list containing the center, covariance matrix 
-        of the prior pdf and a list with the constraint 
-        and realized statistics.
+A list containing: the center, covariance matrix 
+        of the prior pdf and, for \code{priorType = 'abc'}, 
+        a \code{stats} list containing the constraint \code{Sobs} 
+        and realized \code{Ssim} statistics.
 }
 \description{
 Define/estimate normal multivariate prior pdf for exponential decay parameters.
@@ -63,7 +64,7 @@ Provides two ways to buil a normal multivariate prior for
             uncertainty has to be as small as possible.
             This prior assumes a diagonal covariance matrix.
             }
-}
+         }
 }
 \author{
 Pascal PERNOT
