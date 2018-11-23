@@ -1,15 +1,20 @@
 #  plotNoise.R
 #' Plot outputs from \code{estimaNoise}.
+
 #' @param x a numeric vector
 #' @param y a numeric vector of responses
 #' @param uy a numeric vector of uncertainties
 #' @param ySmooth a numeric vector of smoothed data
 #' @param gPars a list of graphical parameters and colors
+#' @param dataType an numeric (1 or 2) defining the type of data 
+
 #' @return Produces a plot.
+
 #' @author Pascal PERNOT
+
 #' @export
 
-plotNoise       <- function(x, y, uy, ySmooth, gPars, dataType) {
+plotNoise <- function(x, y, uy, ySmooth, gPars, dataType = 2) {
   # Extract graphical parameters
   for (n in names(gPars))
     assign(n,rlist::list.extract(gPars,n))
@@ -35,10 +40,22 @@ plotNoise       <- function(x, y, uy, ySmooth, gPars, dataType) {
   
   legend('topright', bty='n',
          title = '', title.adj = 1,
-         legend=c('data','smoother',as.expression(bquote("SNR" == .(formatC(SNR,digits=3))~"dB"))),
+         legend=c('data',
+                  'smoother'
+         ),
          pch=c(20,NA),lty=c(-1,1),
          col=c(cols[6],cols[7])
   )
+  
+  legend('topright', bty='n', 
+         legend=c('','','','',
+                  as.expression(
+                    bquote(
+                      "SNR" == .(formatC(SNR,digits=3))~"dB")
+                  )
+         )
+  )
+         
   box()
   
   # Residuals
@@ -46,7 +63,8 @@ plotNoise       <- function(x, y, uy, ySmooth, gPars, dataType) {
   ylim=1.2*max(abs(resid))*c(-1,1)
   res = resid
   plot(x,res,type='n',
-       ylim=ylim, main='Residuals',
+       ylim=ylim, 
+       main='Residuals',
        xlab= xlabel,
        ylab='residuals (a.u.)')
   grid()

@@ -4,7 +4,7 @@
 \alias{plotMonoExp}
 \title{Plot outputs from \code{fitMonoExp}.}
 \usage{
-plotMonoExp(x, y, uy, ySmooth, mod, resid, gPars)
+plotMonoExp(x, y, uy, ySmooth, mod, resid, gPars, dataType, br)
 }
 \arguments{
 \item{x}{a numeric vector}
@@ -20,6 +20,10 @@ plotMonoExp(x, y, uy, ySmooth, mod, resid, gPars)
 \item{resid}{a numeric vector of residuals}
 
 \item{gPars}{a list of graphical parameters and colors}
+
+\item{dataType}{an numeric (1 or 2) defining the type of data}
+
+\item{br}{a list output from \code{printBr()}}
 }
 \value{
 Produces a plot.

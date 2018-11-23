@@ -9,13 +9,14 @@
 #' @param modScale a real defining the plotting scale for yGP
 #' @param nMC an integer number of spaghetti lines
 #' @param gPars a list of graphical parameters and colors
+#' @param br a list output from \code{printBr()}
 #' @return Produces a plot.
 #' @author Pascal PERNOT
 #' @export
 
 plotExpGP       <- function(x, y, uy, ySmooth, out,
                             modScale=0.3, nMC=100, gPars,
-                            dataType = 2) {
+                            dataType = 2, br=NULL) {
   # Extract graphical parameters
   for (n in names(gPars))
     assign(n,rlist::list.extract(gPars,n))
@@ -26,8 +27,8 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
   prior_PD = out$prior_PD
   # lasso    = out$lasso
   
-  par(mfrow=c(2-prior_PD,2),pty=pty,mar=mar,mgp=mgp,
-      tcl=tcl,lwd=lwd,cex=cex)
+  par(mfrow=c(2-prior_PD,2),pty=pty, mar=mar, mgp=mgp,
+      tcl=tcl, lwd=lwd, cex=cex)
   
   if(dataType==1){
     ylabel = "mean amplitude (a.u.)" 
@@ -60,11 +61,15 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
          xlab= xlabel,
          ylab= ylabel)
     grid()
+    
     if(prior_PD == 0) {
+      # Posterior sample
+      
       if(nMC >0) {
         for (i in 1:nMC)
           lines(x, mod[iMC[i],], col=col_tr[4])
       }
+      
       # Calculate AVerage Exponential Decay
       mExp = x*0
       for (i in 1:nrow(theta))
@@ -73,19 +78,33 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
       lines(x,mExp,col=cols[7])
       
       legend('topright', bty='n',
-             title = '(a) ', title.adj = 1,
+             title = '', title.adj = 1,
              legend=c('data','mean exp. fit','post. sample'),
              pch=c(20,NA,NA),lty=c(-1,1,1),
              col=c(cols[6], cols[7], col_tr2[4])
       )
+      legend('topright', bty='n', 
+             legend=c('','','','','',
+                      as.expression(
+                        bquote(
+                          "br    " == .(formatC(br$br,digits=3)))
+                      ),
+                      as.expression(
+                        bquote(
+                          "CI95" == .(paste0(signif(br$CI95,2),collapse='-')))
+                      )
+             )
+      )
     } else {
+      # Prior sample
+      
       if(nMC >0)
         for (i in 1:nMC)
           lines(x,expDecayModel(x,theta[i,1:3],dataType),col=col_tr[7])
       
       legend('topright', bty='n',
-             title = '(a) ', title.adj = 1,
-             legend=c('data','post. sample'),
+             title = ' ', title.adj = 1,
+             legend=c('data','prior sample'),
              pch=c(20,NA,NA),lty=c(-1,1,1),
              col=c(cols[6], col_tr2[7])
       )
@@ -93,16 +112,17 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
     
     
     box()
-    
+
+    # Residuals
     if(prior_PD == 0) {
-      # Residuals
       res = colMeans(resid)
       ylim=1.2*max(abs(res))*c(-1,1)
       plot(x,res,type='n',
-           ylim=ylim, main='Residuals',
-           xlab= xlabel,
-           ylab='residuals (a.u.)')
-      grid(lwd=3); abline(h=0)
+           main ='Residuals',
+           xlab = xlabel,
+           ylim = ylim, 
+           ylab ='residuals (a.u.)' )
+      grid(); abline(h=0)
       polygon(c(x,rev(x)),c(-2*uy,rev(2*uy)),col=col_tr2[4],border = NA)
       points(x,res,pch=20,cex=0.75,col=cols[6])
       lines(x, ySmooth-y_map, col=cols[7])
@@ -117,13 +137,13 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
     # Local deviations
     if(prior_PD == 0) {
       plot(x, dL[map,], type = 'n',
-           ylim = modScale * c(-1,1),
-           col  = cols[4],
            main = expression('Deviation from mean '*L[s]),
            xlab = xlabel,
+           ylim = modScale * c(-1,1),
            ylab = 'relative deviation')
       abline(h=0)
       grid()
+
       if(nMC >0)
         for (i in 1:nMC)
           lines(x, dL[iMC[i],], col=col_tr[4])
@@ -131,7 +151,6 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
     } else {
       plot(x, x, type = 'n',
            ylim = modScale*c(-1,1),
-           col  = cols[4],
            main = expression('Deviation from mean '*L[s]),
            xlab = xlabel,
            ylab = 'relative deviation')
@@ -144,12 +163,12 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
                   quantile(x,probs = c(0.025,0.25,0.75,0.975))
     )
     )
-    segments(xGP,Q[,1],xGP,Q[,4],col=cols[7])       # 95 %
-    segments(xGP,Q[,2],xGP,Q[,3],col=cols[6],lwd=2*lwd) # 50 %
+    segments(xGP,Q[,1],xGP,Q[,4],col=cols[7])           # 95 %
+    segments(xGP,Q[,2],xGP,Q[,3],col=cols[6],lwd=3*lwd) # 50 %
     
     legend('topright', bty='n',
            legend=c('50% CI','95% CI','post. sample'),
-           pch=NA ,lty=c(1,1,1),lwd=c(2*lwd,lwd,lwd),
+           pch=NA ,lty=c(1,1,1),lwd=c(3*lwd,lwd,lwd),
            col=c(cols[6],cols[7],col_tr2[4])
     )
     box()
@@ -176,15 +195,28 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
            pch=c(20,NA,NA),lty=c(-1,1,1),
            col=c(cols[6],cols[7], col_tr2[4])
     )
+    legend('topright', bty='n', 
+           legend=c('','','','','',
+                    as.expression(
+                      bquote(
+                        "br    " == .(formatC(br$br,digits=3)))
+                    ),
+                    as.expression(
+                      bquote(
+                        "CI95" == .(paste0(signif(br$CI95,2),collapse='-')))
+                    )
+           )
+    )
     box()
     
     # Residus
     ylim=1.2*max(abs(resid))*c(-1,1)
     res = resid
     plot(x,res,type='n',
-         ylim=ylim, main='Residuals',
-         xlab= xlabel,
-         ylab= 'residuals (a.u.)')
+         main = 'Residuals',
+         xlab = xlabel,
+         ylim = ylim, 
+         ylab = 'residuals (a.u.)')
     grid()
     abline(h=0)
     polygon(c(x,rev(x)),c(-2*uy,rev(2*uy)),col=col_tr2[4],border = NA)
@@ -253,27 +285,57 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
   
   if(prior_PD == 0) {
     frame()
-    vps <- baseViewports() #viewport(x=0.5, y=0, width=0.5, height=0.5, just = c("left", "bottom"))
-    pushViewport(viewport(x=0.74,y=0.28))#(vps$inner, vps$figure, vps$plot)
+    # vps <- gridBase::baseViewports() 
+    grid::pushViewport(grid::viewport(x=0.74,y=0.28))
     
     fit_summary = fit@.MISC[["summary"]][["msd"]][1:3,1:2]
-    mean <- formatC(fit_summary[1:3,1],digits=3, format="g", decimal.mark=".")
-    std  <- formatC(fit_summary[1:3,2],digits=1, format="g", decimal.mark=".")
-    parametres <- data.frame(row.names=c('C~(a.u.) ',A0,'L[s]~(µm) '),mean,std)
+    mean = formatC(fit_summary[1:3,1],digits=3, format="g", decimal.mark=".")
+    std  = formatC(fit_summary[1:3,2],digits=1, format="g", decimal.mark=".")
+    parametres = data.frame(row.names=c('C~(a.u.) ',A0,'L[s]~(µm) '),mean,std)
     names(parametres) <- c("mean","std")
     
-    tt <- ttheme_minimal(base_size = 56, base_colour = "black", base_family = "", parse = FALSE,
-                         padding = unit(c(30, 20), "mm"), rowhead=list(fg_params = list(parse=TRUE)))
-    tbl <- tableGrob(parametres, theme=tt)
-    separator1 <- segmentsGrob(x0 = unit(0.1,"npc"), y0 = unit(0,"npc"), x1 = unit(1,"npc"), y1 = unit(0,"npc"),
-                               gp = gpar(lwd = 4.0))
-    separator2 <- segmentsGrob(x0 = unit(0,"npc"), y0 = unit(0,"npc"), x1 = unit(0,"npc"), y1 = unit(1,"npc"),
-                               gp = gpar(lwd = 4.0))
-    tbl <- gtable::gtable_add_grob(tbl, grobs = separator1, t = 1, b = 1, l = 1, r = ncol(tbl))
-    tbl <- gtable::gtable_add_grob(tbl, grobs = separator2, t = 1, b = nrow(tbl), l = 2, r =3)
-    #tbl$widths <- unit(rep(1/ncol(tbl), ncol(tbl)), "npc")
-    grid.draw(tbl)
-    popViewport()
+    tt = gridExtra::ttheme_minimal(
+      base_size = 56, 
+      base_colour = "black", 
+      base_family = "", 
+      parse = FALSE,
+      padding = grid::unit(c(30, 20), "mm"), 
+      rowhead = list(fg_params = list(parse=TRUE))
+    )
+    tbl = gridExtra::tableGrob(parametres, theme=tt)
+    separator1 = grid::segmentsGrob(
+      x0 = grid::unit(0.1,"npc"), 
+      y0 = grid::unit(0,"npc"), 
+      x1 = grid::unit(1,"npc"), 
+      y1 = grid::unit(0,"npc"),
+      gp = grid::gpar(lwd = 4.0)
+    )
+    separator2 = grid::segmentsGrob(
+      x0 = grid::unit(0,"npc"), 
+      y0 = grid::unit(0,"npc"), 
+      x1 = grid::unit(0,"npc"), 
+      y1 = grid::unit(1,"npc"),
+      gp = grid::gpar(lwd = 4.0)
+      )
+    tbl = gtable::gtable_add_grob(
+      tbl, 
+      grobs = separator1, 
+      t = 1, 
+      b = 1, 
+      l = 1, 
+      r = ncol(tbl)
+    )
+    tbl = gtable::gtable_add_grob(
+      tbl, 
+      grobs = separator2, 
+      t = 1, 
+      b = nrow(tbl), 
+      l = 2, 
+      r = 3
+    )
+    grid::grid.draw(tbl)
+    grid::popViewport()
+    
     # QQ-plot of weighted residuals
     # resw = res/(uy*sigma)
     # xlim = range(resw)

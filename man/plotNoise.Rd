@@ -4,7 +4,7 @@
 \alias{plotNoise}
 \title{Plot outputs from \code{estimaNoise}.}
 \usage{
-plotNoise(x, y, uy, ySmooth, gPars)
+plotNoise(x, y, uy, ySmooth, gPars, dataType = 2)
 }
 \arguments{
 \item{x}{a numeric vector}
@@ -16,6 +16,8 @@ plotNoise(x, y, uy, ySmooth, gPars)
 \item{ySmooth}{a numeric vector of smoothed data}
 
 \item{gPars}{a list of graphical parameters and colors}
+
+\item{dataType}{an numeric (1 or 2) defining the type of data}
 }
 \value{
 Produces a plot.

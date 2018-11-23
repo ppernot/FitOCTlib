@@ -5,7 +5,7 @@
 \title{Plot outputs from \code{fitExpGP}.}
 \usage{
 plotExpGP(x, y, uy, ySmooth, out, modScale = 0.3, nMC = 100, gPars,
-  dataType = 2)
+  dataType = 2, br = NULL)
 }
 \arguments{
 \item{x}{a numeric vector}
@@ -25,6 +25,8 @@ plotExpGP(x, y, uy, ySmooth, out, modScale = 0.3, nMC = 100, gPars,
 \item{gPars}{a list of graphical parameters and colors}
 
 \item{dataType}{an numeric (1 or 2) defining the type of data}
+
+\item{br}{a list output from \code{printBr()}}
 }
 \value{
 Produces a plot.
