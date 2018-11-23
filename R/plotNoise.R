@@ -9,23 +9,33 @@
 #' @author Pascal PERNOT
 #' @export
 
-plotNoise       <- function(x, y, uy, ySmooth, gPars) {
+plotNoise       <- function(x, y, uy, ySmooth, gPars, dataType) {
   # Extract graphical parameters
   for (n in names(gPars))
     assign(n,rlist::list.extract(gPars,n))
   
   par(mfrow=c(1,2),pty=pty,mar=mar,mgp=mgp,tcl=tcl,lwd=lwd, cex=cex)
   
+  if (dataType==1){
+    SNR = 20*log10(mean(y)/mean(abs(y-ySmooth)))
+    ylabel = "mean amplitude (a.u.)"
+  }
+  if (dataType==2){
+    SNR = 10*log10(mean(y)/mean(abs(y-ySmooth)))
+    ylabel = "mean intensity (a.u.)"
+  }
+  
   # Smooth Fit
   plot(x,y,pch=20,cex=0.5,col=cols[6],
-       main='Data fit',
-       xlab='depth (a.u.)',
-       ylab='mean OCT signal (a.u.)')
+       main= plot_title,
+       xlab= xlabel,
+       ylab= ylabel)
   grid()
   lines(x,ySmooth,col=cols[7])
+  
   legend('topright', bty='n',
          title = '', title.adj = 1,
-         legend=c('data','smoother'),
+         legend=c('data','smoother',as.expression(bquote("SNR" == .(formatC(SNR,digits=3))~"dB"))),
          pch=c(20,NA),lty=c(-1,1),
          col=c(cols[6],cols[7])
   )
@@ -37,7 +47,7 @@ plotNoise       <- function(x, y, uy, ySmooth, gPars) {
   res = resid
   plot(x,res,type='n',
        ylim=ylim, main='Residuals',
-       xlab='depth (a.u.)',
+       xlab= xlabel,
        ylab='residuals (a.u.)')
   grid()
   abline(h=0)
