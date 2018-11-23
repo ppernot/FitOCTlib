@@ -29,7 +29,9 @@ plotExpGP(x, y, uy, ySmooth, out, modScale = 0.3, nMC = 100, gPars,
 \item{br}{a list output from \code{printBr()}}
 }
 \value{
-Produces a plot.
+Produces a plot. If \code{gPars$graphTable} is TRUE and
+        out$prior_PD != 0, the best values of the fit are shown
+        in tabular form instead of a QQ-plot of the residuals.
 }
 \description{
 Plot outputs from \code{fitExpGP}.

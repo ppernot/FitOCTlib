@@ -10,7 +10,10 @@
 #' @param nMC an integer number of spaghetti lines
 #' @param gPars a list of graphical parameters and colors
 #' @param br a list output from \code{printBr()}
-#' @return Produces a plot.
+#' @return Produces a plot. If \code{gPars$graphTable} is TRUE and
+#'         out$prior_PD != 0, the best values of the fit are shown
+#'         in tabular form instead of a QQ-plot of the residuals.
+#'           
 #' @author Pascal PERNOT
 #' @export
 
@@ -284,65 +287,99 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
   # }
   
   if(prior_PD == 0) {
-    frame()
-    # vps <- gridBase::baseViewports() 
-    grid::pushViewport(grid::viewport(x=0.74,y=0.28))
-    
-    fit_summary = fit@.MISC[["summary"]][["msd"]][1:3,1:2]
-    mean = formatC(fit_summary[1:3,1],digits=3, format="g", decimal.mark=".")
-    std  = formatC(fit_summary[1:3,2],digits=1, format="g", decimal.mark=".")
-    parametres = data.frame(row.names=c('C~(a.u.) ',A0,'L[s]~(µm) '),mean,std)
-    names(parametres) <- c("mean","std")
-    
-    tt = gridExtra::ttheme_minimal(
-      base_size = 56, 
-      base_colour = "black", 
-      base_family = "", 
-      parse = FALSE,
-      padding = grid::unit(c(30, 20), "mm"), 
-      rowhead = list(fg_params = list(parse=TRUE))
-    )
-    tbl = gridExtra::tableGrob(parametres, theme=tt)
-    separator1 = grid::segmentsGrob(
-      x0 = grid::unit(0.1,"npc"), 
-      y0 = grid::unit(0,"npc"), 
-      x1 = grid::unit(1,"npc"), 
-      y1 = grid::unit(0,"npc"),
-      gp = grid::gpar(lwd = 4.0)
-    )
-    separator2 = grid::segmentsGrob(
-      x0 = grid::unit(0,"npc"), 
-      y0 = grid::unit(0,"npc"), 
-      x1 = grid::unit(0,"npc"), 
-      y1 = grid::unit(1,"npc"),
-      gp = grid::gpar(lwd = 4.0)
+    if(graphTable) {
+      frame()
+      # vps <- gridBase::baseViewports() 
+      grid::pushViewport(grid::viewport(x=0.74,y=0.28))
+      
+      if(method == 'sample') {
+        sum  = rstan::summary(fit,
+                              use_cache=FALSE,
+                              probs=c()
+        )$summary[1:3,c(1,3)]
+        # fit_summary = fit@.MISC[["summary"]][["msd"]][1:3,1:2]
+        # mean = formatC(fit_summary[1:3,1],digits=3, format="g", decimal.mark=".")
+        # std  = formatC(fit_summary[1:3,2],digits=1, format="g", decimal.mark=".")
+      } else {
+        
+        pars = c('theta')
+        opt = list()
+        for (par in pars)
+          opt[[par]] = fit$par[[par]]
+        opt = unlist(opt,use.names = TRUE)
+        
+        se = rep(NA, length(opt))
+        if(!is.null(fit$hessian)) {
+          H = fit$hessian
+          tags = colnames(H)
+          tags = gsub('\\.','',tags)
+          colnames(H) = rownames(H) = tags
+          se = list()
+          for (par in names(opt))
+            se[[par]]  = sqrt(-1/H[par,par])
+          se = unlist(se)
+        }
+        sum = data.frame(mean = opt, sd = se)
+      }
+      
+      parametres = data.frame(row.names=c('C~(a.u.) ',A0,'L[s]~(µm) '),
+                              signif(sum[,1],3),signif(sum[,2],2))
+      names(parametres) <- c("mean","std")
+      
+      tt = gridExtra::ttheme_minimal(
+        base_size = 56, 
+        base_colour = "black", 
+        base_family = "", 
+        parse = FALSE,
+        padding = grid::unit(c(30, 20), "mm"), 
+        rowhead = list(fg_params = list(parse=TRUE))
       )
-    tbl = gtable::gtable_add_grob(
-      tbl, 
-      grobs = separator1, 
-      t = 1, 
-      b = 1, 
-      l = 1, 
-      r = ncol(tbl)
-    )
-    tbl = gtable::gtable_add_grob(
-      tbl, 
-      grobs = separator2, 
-      t = 1, 
-      b = nrow(tbl), 
-      l = 2, 
-      r = 3
-    )
-    grid::grid.draw(tbl)
-    grid::popViewport()
+      tbl = gridExtra::tableGrob(parametres, theme=tt)
+      separator1 = grid::segmentsGrob(
+        x0 = grid::unit(0.1,"npc"), 
+        y0 = grid::unit(0,"npc"), 
+        x1 = grid::unit(1,"npc"), 
+        y1 = grid::unit(0,"npc"),
+        gp = grid::gpar(lwd = 4.0)
+      )
+      separator2 = grid::segmentsGrob(
+        x0 = grid::unit(0,"npc"), 
+        y0 = grid::unit(0,"npc"), 
+        x1 = grid::unit(0,"npc"), 
+        y1 = grid::unit(1,"npc"),
+        gp = grid::gpar(lwd = 4.0)
+      )
+      tbl = gtable::gtable_add_grob(
+        tbl, 
+        grobs = separator1, 
+        t = 1, 
+        b = 1, 
+        l = 1, 
+        r = ncol(tbl)
+      )
+      tbl = gtable::gtable_add_grob(
+        tbl, 
+        grobs = separator2, 
+        t = 1, 
+        b = nrow(tbl), 
+        l = 2, 
+        r = 3
+      )
+      grid::grid.draw(tbl)
+      grid::popViewport()
+      
+    } else {
+
+      # QQ-plot of weighted residuals
+      resw = res/(uy*sigma)
+      xlim = range(resw)
+      qqnorm(resw, xlim=xlim,ylim=xlim,
+             main='Norm. Q-Q plot of wghtd resid.',
+             col=cols[6], pch=20)
+      abline(a=0,b=1,lty=2)
+      grid();box()
+      
+    }
     
-    # QQ-plot of weighted residuals
-    # resw = res/(uy*sigma)
-    # xlim = range(resw)
-    # qqnorm(resw, xlim=xlim,ylim=xlim,
-    #        main='Norm. Q-Q plot of wghtd resid.',
-    #        col=cols[6], pch=20)
-    # abline(a=0,b=1,lty=2)
-    # grid();box()
   }
 }
