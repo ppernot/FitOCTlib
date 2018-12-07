@@ -38,7 +38,7 @@ plotNoise <- function(x, y, uy, ySmooth, gPars, dataType = 2) {
   grid()
   lines(x,ySmooth,col=cols[7])
   
-  legend('topright', bty='n',
+  legend('topright', bty='n', cex=cex.leg,
          title = '', title.adj = 1,
          legend=c('data',
                   'smoother'
@@ -47,7 +47,7 @@ plotNoise <- function(x, y, uy, ySmooth, gPars, dataType = 2) {
          col=c(cols[6],cols[7])
   )
   
-  legend('topright', bty='n', 
+  legend('topright', bty='n', cex=cex.leg,
          legend=c('','','','',
                   as.expression(
                     bquote(
@@ -71,7 +71,7 @@ plotNoise <- function(x, y, uy, ySmooth, gPars, dataType = 2) {
   abline(h=0)
   polygon(c(x,rev(x)),c(-2*uy,rev(2*uy)),col=col_tr2[4],border = NA)
   points(x,res,pch=20,cex=0.75,col=cols[6])
-  legend('topright', bty='n',
+  legend('topright', bty='n', cex=cex.leg,
          title = '', title.adj = 1,
          legend=c('resid.','data 95% uncert.'),
          pch=c(20,NA),lty=c(-1,1),lwd=c(1,10),

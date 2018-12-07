@@ -59,7 +59,7 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
     iMC = sample.int(nrow(theta),nMC)
     
     # Fit
-    plot(x,y,pch=20,cex=0.5,col=cols[6],
+    plot(x,y,pch=20,col=cols[6],
          main= plot_title,
          xlab= xlabel,
          ylab= ylabel)
@@ -80,13 +80,13 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
       mExp = mExp/nrow(theta)
       lines(x,mExp,col=cols[7])
       
-      legend('topright', bty='n',
+      legend('topright', bty='n', cex=cex.leg,
              title = '', title.adj = 1,
              legend=c('data','mean exp. fit','post. sample'),
              pch=c(20,NA,NA),lty=c(-1,1,1),
              col=c(cols[6], cols[7], col_tr2[4])
       )
-      legend('topright', bty='n', 
+      legend('topright', bty='n', cex=cex.leg,
              legend=c('','','','','',
                       as.expression(
                         bquote(
@@ -105,7 +105,7 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
         for (i in 1:nMC)
           lines(x,expDecayModel(x,theta[i,1:3],dataType),col=col_tr[7])
       
-      legend('topright', bty='n',
+      legend('topright', bty='n', cex=cex.leg,
              title = ' ', title.adj = 1,
              legend=c('data','prior sample'),
              pch=c(20,NA,NA),lty=c(-1,1,1),
@@ -129,7 +129,7 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
       polygon(c(x,rev(x)),c(-2*uy,rev(2*uy)),col=col_tr2[4],border = NA)
       points(x,res,pch=20,cex=0.75,col=cols[6])
       lines(x, ySmooth-y_map, col=cols[7])
-      legend('topright', bty='n',
+      legend('topright', bty='n', cex=cex.leg,
              legend=c('mean resid.','data 95% uncert.','smooth - fit'),
              pch=c(20,NA,NA),lty=c(-1,1,1),lwd=c(1,6,1),
              col=c(cols[6],col_tr2[4],cols[7])
@@ -169,7 +169,7 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
     segments(xGP,Q[,1],xGP,Q[,4],col=cols[7])           # 95 %
     segments(xGP,Q[,2],xGP,Q[,3],col=cols[6],lwd=3*lwd) # 50 %
     
-    legend('topright', bty='n',
+    legend('topright', bty='n', cex=cex.leg,
            legend=c('50% CI','95% CI','post. sample'),
            pch=NA ,lty=c(1,1,1),lwd=c(3*lwd,lwd,lwd),
            col=c(cols[6],cols[7],col_tr2[4])
@@ -193,12 +193,12 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
     lines(x,expDecayModel(x,theta,dataType),col=cols[7])
     lines(x,mod, col=cols[4])
     
-    legend('topright', bty='n',
+    legend('topright', bty='n', cex=cex.leg,
            legend=c('data','expo. best fit','best fit'),
            pch=c(20,NA,NA),lty=c(-1,1,1),
            col=c(cols[6],cols[7], col_tr2[4])
     )
-    legend('topright', bty='n', 
+    legend('topright', bty='n', cex=cex.leg,
            legend=c('','','','','',
                     as.expression(
                       bquote(
@@ -225,7 +225,7 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
     polygon(c(x,rev(x)),c(-2*uy,rev(2*uy)),col=col_tr2[4],border = NA)
     points(x,res,pch=20,cex=0.75,col=cols[6])
     lines(x, ySmooth - mod, col=cols[7])
-    legend('topright', bty='n',
+    legend('topright', bty='n', cex=cex.leg,
            legend=c('mean resid.','data 95% uncert.','smooth - fit'),
            pch=c(20,NA,NA),lty=c(-1,1,1),lwd=c(1,6,1),
            col=c(cols[6],col_tr2[4],cols[7])
@@ -259,7 +259,7 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
       )
       segments(xGP,Q[,1],xGP,Q[,4],col=cols[7])       # 95 %
       segments(xGP,Q[,2],xGP,Q[,3],col=cols[6],lwd=2*lwd) # 50 %
-      legend('topright', bty='n',
+      legend('topright', bty='n', cex=cex.leg,
              legend=c('50% CI','95% CI','post. sample'),
              pch=NA ,lty=c(1,1,1),lwd=c(2*lwd,lwd,lwd),
              col=c(cols[6],cols[7],col_tr2[4])
@@ -268,7 +268,7 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
     } else {
       points(xGP,yGP,pch=19,col=cols[7])
       segments(xGP,yGP,xGP,0*yGP,col=cols[7])
-      legend('topright', bty='n',
+      legend('topright', bty='n', cex=cex.leg,
              legend=c('ctrl points','modulation'),
              pch=c(19,NA) ,lty=c(1,1),lwd=c(-1,lwd),
              col=c(cols[7],cols[4])

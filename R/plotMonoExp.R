@@ -39,13 +39,13 @@ plotMonoExp <- function(x, y, uy, ySmooth,
        ylab= ylabel)
   grid()
   lines(x,mod,col=cols[7])
-  legend('topright', bty='n',
+  legend('topright', bty='n', cex=cex.leg,
          title = '', title.adj = 1,
          legend=c('data','best fit'),
          pch=c(20,NA),lty=c(-1,1),
          col=c(cols[6],cols[7])
   )
-  legend('topright', bty='n', 
+  legend('topright', bty='n', cex=cex.leg,
          legend=c('','','','',
                   as.expression(
                     bquote(
@@ -72,7 +72,7 @@ plotMonoExp <- function(x, y, uy, ySmooth,
   polygon(c(x,rev(x)),c(-2*uy,rev(2*uy)),col=col_tr2[4],border = NA)
   points(x,res,pch=20,cex=0.75,col=cols[6])
   lines(x, ySmooth-mod, col=cols[7])
-  legend('topright', bty='n',
+  legend('topright', bty='n', cex=cex.leg,
          title = '', title.adj = 1,
          legend=c('mean resid.','data 95% uncert.','best fit - smooth'),
          pch=c(20,NA,NA),lty=c(-1,1,1),lwd=c(lwd,10,lwd),
