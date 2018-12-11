@@ -4,7 +4,7 @@
 \alias{plotPriPost}
 \title{Plot 1 marginal prior and posterior pdf.}
 \usage{
-plotPriPost(pri, pos, tag, xlim = range(c(pri, pos)), gPars)
+plotPriPost(pri, pos, tag, xlim = range(c(pri, pos)), gPars, kl = TRUE)
 }
 \arguments{
 \item{pri}{prior sample}
@@ -16,9 +16,12 @@ plotPriPost(pri, pos, tag, xlim = range(c(pri, pos)), gPars)
 \item{xlim}{an interval}
 
 \item{gPars}{a list of graphical parameters and colors}
+
+\item{kl}{a logical to compute and display KL-divergence}
 }
 \value{
-Produces a plot.
+Produces a plot. The KL divergence in bits is
+        displayed in the title if `kl == TRUE`.
 }
 \description{
 Plot 1 marginal prior and posterior pdf.
