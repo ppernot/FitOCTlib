@@ -13,6 +13,7 @@
 #' @import Rcpp
 #' @import rstantools
 #' @importFrom rstan sampling optimizing extract
+#' @importFrom FNN KL.divergence
 #' 
 #' @references 
 #' Stan Development Team (2018). RStan: the R interface to Stan. R package version 2.18.1. http://mc-stan.org
