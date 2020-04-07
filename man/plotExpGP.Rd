@@ -4,8 +4,18 @@
 \alias{plotExpGP}
 \title{Plot outputs from \code{fitExpGP}.}
 \usage{
-plotExpGP(x, y, uy, ySmooth, out, modScale = 0.3, nMC = 100, gPars,
-  dataType = 2, br = NULL)
+plotExpGP(
+  x,
+  y,
+  uy,
+  ySmooth,
+  out,
+  modScale = 0.3,
+  nMC = 100,
+  gPars,
+  dataType = 2,
+  br = NULL
+)
 }
 \arguments{
 \item{x}{a numeric vector}

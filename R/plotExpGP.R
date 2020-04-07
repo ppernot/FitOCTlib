@@ -286,6 +286,7 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
   #   }
   # }
   
+  sum = NULL
   if(prior_PD == 0) {
     if(graphTable) {
       frame()
@@ -382,4 +383,7 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
     }
     
   }
+  invisible(
+    list(sum = sum)
+  )
 }

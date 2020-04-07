@@ -51,9 +51,10 @@ fitMonoExp <- function(x, y, uy, method = 'optim', dataType = 2,
     )
     
     # Estimate decay params
-    theta   = rstan::extract(fit,'theta')[[1]]
-    theta0  = colMeans(theta)
-    thetaCor= cor(theta)
+    theta    = rstan::extract(fit,'theta')[[1]]
+    theta0   = colMeans(theta)
+    thetaUnc = sd(theta)
+    thetaCor = cor(theta)
 
   } else {
 
@@ -67,16 +68,21 @@ fitMonoExp <- function(x, y, uy, method = 'optim', dataType = 2,
     )
     
     # Estimate decay params
-    theta0  = fit$par$theta
-    thetaCor= cov2cor(solve(-fit$hessian))
+    theta0   = fit$par$theta
+    covMat   = solve(-fit$hessian)
+    thetaUnc = diag(covMat)^0.5
+    thetaCor = cov2cor(covMat)
 
   }
+  
   return(
     list(fit        = fit,
          best.theta = theta0,
          cor.theta  = thetaCor,
+         unc.theta  = thetaUnc,
          method     = method,
          data       = stanData
     )
   )
+  
 }

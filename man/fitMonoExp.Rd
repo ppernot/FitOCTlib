@@ -4,8 +4,16 @@
 \alias{fitMonoExp}
 \title{Monoexponential fit of OCT decay}
 \usage{
-fitMonoExp(x, y, uy, method = "optim", dataType = 2, nb_chains = 4,
-  nb_warmup = 500, nb_iter = nb_warmup + 500)
+fitMonoExp(
+  x,
+  y,
+  uy,
+  method = "optim",
+  dataType = 2,
+  nb_chains = 4,
+  nb_warmup = 500,
+  nb_iter = nb_warmup + 500
+)
 }
 \arguments{
 \item{x}{a numeric vector}

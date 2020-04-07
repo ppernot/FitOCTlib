@@ -4,9 +4,18 @@
 \alias{estimateExpPrior}
 \title{Define/estimate normal multivariate prior pdf for exponential decay parameters.}
 \usage{
-estimateExpPrior(x, uy, dataType = 2, priorType = "mono", out,
-  ru_theta = 0.05, eps = 0.001, nb_chains = 4, nb_warmup = 800,
-  nb_iter = nb_warmup + 200)
+estimateExpPrior(
+  x,
+  uy,
+  dataType = 2,
+  priorType = "mono",
+  out,
+  ru_theta = 0.05,
+  eps = 0.001,
+  nb_chains = 4,
+  nb_warmup = 800,
+  nb_iter = nb_warmup + 200
+)
 }
 \arguments{
 \item{x}{numeric vector of depths}

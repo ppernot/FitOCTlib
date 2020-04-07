@@ -78,4 +78,7 @@ plotNoise <- function(x, y, uy, ySmooth, gPars, dataType = 2) {
          col=c(cols[6],col_tr2[4])
   )
   box()
+  invisible(
+    list(SNR = SNR)
+  )
 }
