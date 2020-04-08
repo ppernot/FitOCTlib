@@ -198,17 +198,23 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
            pch=c(20,NA,NA),lty=c(-1,1,1),
            col=c(cols[6],cols[7], col_tr2[4])
     )
-    legend('topright', bty='n', cex=cex.leg,
-           legend=c('','','','','',
-                    as.expression(
-                      bquote(
-                        "br    " == .(formatC(br$br,digits=3)))
-                    ),
-                    as.expression(
-                      bquote(
-                        "CI95" == .(paste0(signif(br$CI95,2),collapse='-')))
-                    )
-           )
+    legend(
+      'topright',
+      bty = 'n',
+      cex = cex.leg,
+      legend = c(
+        '',
+        '',
+        '',
+        '',
+        '',
+        as.expression(bquote("br    " == .(
+          formatC(br$br, digits = 3)
+        ))),
+        as.expression(bquote("CI95" == .(
+          paste0(signif(br$CI95, 2), collapse = '-')
+        )))
+      )
     )
     box()
     
@@ -288,40 +294,41 @@ plotExpGP       <- function(x, y, uy, ySmooth, out,
   
   sum = NULL
   if(prior_PD == 0) {
+    
+    if(method == 'sample') {
+      sum  = rstan::summary(fit,
+                            use_cache=FALSE,
+                            probs=c()
+      )$summary[1:3,c(1,3)]
+      # fit_summary = fit@.MISC[["summary"]][["msd"]][1:3,1:2]
+      # mean = formatC(fit_summary[1:3,1],digits=3, format="g", decimal.mark=".")
+      # std  = formatC(fit_summary[1:3,2],digits=1, format="g", decimal.mark=".")
+    } else {
+      
+      pars = c('theta')
+      opt = list()
+      for (par in pars)
+        opt[[par]] = fit$par[[par]]
+      opt = unlist(opt,use.names = TRUE)
+      
+      se = rep(NA, length(opt))
+      if(!is.null(fit$hessian)) {
+        H = fit$hessian
+        tags = colnames(H)
+        tags = gsub('\\.','',tags)
+        colnames(H) = rownames(H) = tags
+        se = list()
+        for (par in names(opt))
+          se[[par]]  = sqrt(-1/H[par,par])
+        se = unlist(se)
+      }
+      sum = data.frame(mean = opt, sd = se)
+    }
+    
     if(graphTable) {
       frame()
       # vps <- gridBase::baseViewports() 
       grid::pushViewport(grid::viewport(x=0.74,y=0.28))
-      
-      if(method == 'sample') {
-        sum  = rstan::summary(fit,
-                              use_cache=FALSE,
-                              probs=c()
-        )$summary[1:3,c(1,3)]
-        # fit_summary = fit@.MISC[["summary"]][["msd"]][1:3,1:2]
-        # mean = formatC(fit_summary[1:3,1],digits=3, format="g", decimal.mark=".")
-        # std  = formatC(fit_summary[1:3,2],digits=1, format="g", decimal.mark=".")
-      } else {
-        
-        pars = c('theta')
-        opt = list()
-        for (par in pars)
-          opt[[par]] = fit$par[[par]]
-        opt = unlist(opt,use.names = TRUE)
-        
-        se = rep(NA, length(opt))
-        if(!is.null(fit$hessian)) {
-          H = fit$hessian
-          tags = colnames(H)
-          tags = gsub('\\.','',tags)
-          colnames(H) = rownames(H) = tags
-          se = list()
-          for (par in names(opt))
-            se[[par]]  = sqrt(-1/H[par,par])
-          se = unlist(se)
-        }
-        sum = data.frame(mean = opt, sd = se)
-      }
       
       parametres = data.frame(row.names=c('C~(a.u.) ',A0,'L[s]~(µm) '),
                               signif(sum[,1],3),signif(sum[,2],2))
